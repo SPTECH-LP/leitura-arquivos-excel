@@ -39,11 +39,14 @@ Neste exemplo, vamos utilizar a biblioteca Apache POI para ler arquivos Excel (.
 
 ### 2. Instancie um objeto Workbook
 
-Para ler nosso arquivo excel, precisamos instanciar um
-objeto `XSSFWorkbook`. Ele representará o arquivo Excel que queremos ler no Java.
+`Workbook` é a classe principal do Apache POI. Ela representa um arquivo Excel e possui
+métodos para manipular planilhas, linhas e células.
 
-Devemos passar o arquivo que estamos lendo no construtor da classe. Esse arquivo é representado como
-objeto `InputStream`.
+Ao instanciar um Workbook, é necessário passar como parâmetro o arquivo que será lido. Este arquivo
+é representado por um objeto `InputStream`.
+
+Caso a extensão do arquivo seja `.xlsx`, utilizamos a classe `XSSFWorkbook`. Caso seja um arquivo
+`.xls`, utilizamos a classe `HSSFWorkbook`.
 
 ```java
 Path caminho = Path.of("melhores-livros.xlsx");
@@ -54,29 +57,29 @@ Workbook workbook = new XSSFWorkbook(arquivo);
 
 ### 3. Manipule os dados do Workbook
 
-Um arquivo excel comúm, possui planilhas, linhas e células. Assim também é com o objeto Workbook.
-
-Para acessar uma planilha específica, utilizamos o método `getSheetAt()` passando o índice da
-planilha.
-
-**OBS:** O índice começa em 0!
+Para acessar uma planilha específica, utilizamos o método `getSheetAt()`, passando o índice da
+planilha desejada.
 
 ```java
+// Acessando a primeira planilha
 Sheet sheet = workbook.getSheetAt(0);
 ```
 
-Para acessar as linhas e colunas, utilizamos o método `getRow()` e `getCell()`, passando também um
-índice.
+Para acessar as linhas e respectivas células de uma planilha, utilizamos os métodos `getRow()` e
+`getCell()`, passando seus respectivos índices.
 
 ```java
+// Acessando a primeira linha da planilha
 Row row = sheet.getRow(0);
+
+// Acessando a primeira célula da linha
 Cell cell = row.getCell(0);
 ```
 
 Para pegar o valor de uma célula, podemos utilizar vários métodos. Temos métodos diferentes para
 tipos de dados diferentes.
 
-Por exemplo, se quisermos pegar o valor de uma célula como String, podemos utilizar o
+Por exemplo, se quisermos pegar o valor de uma célula que é uma String, podemos utilizar o
 método `getStringCellValue()`.
 
 ```java
@@ -95,3 +98,8 @@ workbook.close();
 
 O Apache POI **NÃO** consegue ler arquivos .csv; É necessário
 convertê-lo para .xlsx ou .xls.
+
+## 🤓 Dúvidas?
+
+Caso tenha algúma dúvida, recomendamos ler a documentação oficial do Apache POI:
+[https://javadoc.io/doc/org.apache.poi/poi/latest/index.html](https://javadoc.io/doc/org.apache.poi/poi/latest/index.html)

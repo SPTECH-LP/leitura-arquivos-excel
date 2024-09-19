@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -14,32 +15,40 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class LeitorExcel {
 
-    public List<Livro> extrarLivros(InputStream arquivo) {
+    public List<Livro> extrarLivros(String nomeArquivo, InputStream arquivo) {
         try {
-            System.out.println("\nIniciando leitura do arquivo\n");
+            System.out.println("\nIniciando leitura do arquivo %s\n".formatted(nomeArquivo));
 
             // Criando um objeto Workbook a partir do arquivo recebido
-            Workbook workbook = new XSSFWorkbook(arquivo);
+            Workbook workbook;
+            if (nomeArquivo.endsWith(".xlsx")) {
+                workbook = new XSSFWorkbook(arquivo);
+            } else {
+                workbook = new HSSFWorkbook(arquivo);
+            }
+
             Sheet sheet = workbook.getSheetAt(0);
 
             List<Livro> livrosExtraidos = new ArrayList<>();
 
-            // Iterando sobre as linhas do arquivo
+            // Iterando sobre as linhas da planilha
             for (Row row : sheet) {
 
-                // A primeira linha representa o cabeçalho!
                 if (row.getRowNum() == 0) {
-                    System.out.println("Recebendo cabeçalho");
+                    System.out.println("\nLendo cabeçalho");
 
                     for (int i = 0; i < 4; i++) {
-                        System.out.print(row.getCell(i).getStringCellValue() + " | ");
+                        String coluna = row.getCell(i).getStringCellValue();
+                        System.out.println("Coluna " + i + ": " + coluna);
                     }
-                    System.out.println();
+
+                    System.out.println("--------------------");
                     continue;
                 }
 
                 // Extraindo valor das células e criando objeto Livro
                 System.out.println("Lendo linha " + row.getRowNum());
+
                 Livro livro = new Livro();
                 livro.setId((int) row.getCell(0).getNumericCellValue());
                 livro.setTitulo(row.getCell(1).getStringCellValue());
@@ -49,8 +58,9 @@ public class LeitorExcel {
                 livrosExtraidos.add(livro);
             }
 
-            // Fechando o arquivo para liberar recursos
+            // Fechando o workbook após a leitura
             workbook.close();
+
             System.out.println("\nLeitura do arquivo finalizada\n");
 
             return livrosExtraidos;

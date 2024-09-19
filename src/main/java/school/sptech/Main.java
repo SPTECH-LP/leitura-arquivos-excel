@@ -9,18 +9,19 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        // Carregando o arquivo de excel
-        Path caminho = Path.of("melhores-livros.xlsx");
+        String nomeArquivo = "melhores-livros.xlsx";
+
+        // Carregando o arquivo excel
+        Path caminho = Path.of(nomeArquivo);
         InputStream arquivo = Files.newInputStream(caminho);
 
         // Extraindo os livros do arquivo
         LeitorExcel leitorExcel = new LeitorExcel();
-        List<Livro> livrosExtraidos = leitorExcel.extrarLivros(arquivo);
+        List<Livro> livrosExtraidos = leitorExcel.extrarLivros(nomeArquivo, arquivo);
 
-        // Fechando o arquivo para liberar recursos
+        // Fechando o arquivo após a extração
         arquivo.close();
 
-        // Exibindo os livros extraídos
         System.out.println("Livros extraídos:");
         for (Livro livro : livrosExtraidos) {
             System.out.println(livro);
