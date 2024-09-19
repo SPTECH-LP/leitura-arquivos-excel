@@ -15,8 +15,6 @@ para formatos de arquivos do Microsoft Office, como .doc, .docx, .xls, .xlsx, et
 
 Neste exemplo, vamos utilizar a biblioteca Apache POI para ler arquivos Excel (.xlsx e .xls).
 
----
-
 ## 💡Lendo arquivos Excel com Apache POI
 
 ### 1. Adicione as dependências Maven necessárias ao seu arquivo `pom.xml`:
