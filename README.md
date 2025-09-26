@@ -1,4 +1,3 @@
-
 ![readme](https://github.com/user-attachments/assets/5f2af819-5f98-4c92-84db-e91c43f809c1)
 
 # Exemplo de leitura de arquivos excel utilizando a biblioteca Apache POI
@@ -11,16 +10,16 @@
 2. Abrir projeto no IntelliJ ou sua IDE de preferencia
 3. Executar projeto na IDE
 
-## 📚 O que é o Apache POI?
+## 📊 O que é o Apache POI?
 
 Apache POI é uma biblioteca Java desenvolvida pela Apache Software Foundation que fornece suporte
 para formatos de arquivos do Microsoft Office, como .doc, .docx, .xls, .xlsx, etc.
 
 Neste exemplo, vamos utilizar a biblioteca Apache POI para ler arquivos Excel (.xlsx e .xls).
 
-## 💡Lendo arquivos Excel com Apache POI
+## Lendo arquivos Excel com Apache POI
 
-### 1. Adicione as dependências Maven necessárias ao seu arquivo `pom.xml`:
+### 🔍️ 1. Adicione as dependências Maven necessárias ao seu arquivo `pom.xml`:
 
 ```xml
 
@@ -38,25 +37,70 @@ Neste exemplo, vamos utilizar a biblioteca Apache POI para ler arquivos Excel (.
 </dependencies>
 ```
 
-### 2. Instancie um objeto Workbook
+---
+
+### 📢 2. Instancie um objeto Workbook
 
 `Workbook` é a classe principal do Apache POI. Ela representa um arquivo Excel e possui
 métodos para manipular planilhas, linhas e células.
 
-Ao instanciar um Workbook, é necessário passar como parâmetro o arquivo que será lido. Este arquivo
-é representado por um objeto `InputStream`.
+Não instanciamos diretamente o Workbook, e sim suas implementações.
 
-Caso a extensão do arquivo seja `.xlsx`, utilizamos a classe `XSSFWorkbook`. Caso seja um arquivo
-`.xls`, utilizamos a classe `HSSFWorkbook`.
+- Caso a extensão do arquivo seja `.xlsx`, utilizamos a classe `XSSFWorkbook`.
+- Caso seja um arquivo
+  `.xls`, utilizamos a classe `HSSFWorkbook`.
+
+Ao instanciar um Workbook, é necessário passar como parâmetro o arquivo que será lido.
+
+O construtor do XSSFWorkbook é sobrecarregado, ou seja, podemos passar diferentes parâmetros, veja
+alguns
+exemplos:
+
+| Classe          | Descrição                                                                                |
+|-----------------|------------------------------------------------------------------------------------------|
+| **InputStream** | Representa um fluxo de dados (ex.: arquivo vindo da rede, banco de dados, local e etc.). |                                                                                 
+| **File**        | Representa um arquivo físico no sistema.                                                 |
+| **String**      | Informa o caminho do arquivo (path) como `String`.                                       |                                                                                        |
+
+#### 2.1. Usando `InputStream`
 
 ```java
-Path caminho = Path.of("melhores-livros.xlsx");
-InputStream arquivo = Files.newInputStream(caminho);
-
+InputStream arquivo = new FileInputStream(caminho);
 Workbook workbook = new XSSFWorkbook(arquivo);
 ```
 
-### 3. Manipule os dados do Workbook
+👉 Útil quando o arquivo não está diretamente acessível por caminho físico, mas sim carregado como
+stream.
+
+---
+
+#### 2.2. Usando `File`
+
+```java
+File arquivo = new File("vendas-2025.xlsx");
+Workbook workbook = new XSSFWorkbook(arquivo);
+```
+
+👉 Útil quando o programa já trabalha com `File` (ex.: upload do usuário em uma aplicação desktop).
+
+---
+
+#### 2.3. Usando `String`
+
+```java
+String caminho = "relatorio-financeiro.xlsx";
+Workbook workbook = new XSSFWorkbook(caminho);
+```
+
+👉 Parecido com o exemplo de File, mas passando String como argumento.
+
+---
+
+⚠️ OBS: Com o `HSSFWorkbook` usaremos apenas o `InputStream`.
+
+---
+
+### 🥷 3. Manipule os dados do Workbook
 
 Para acessar uma planilha específica, utilizamos o método `getSheetAt()`, passando o índice da
 planilha desejada.
@@ -87,9 +131,10 @@ método `getStringCellValue()`.
 String valor = cell.getStringCellValue();
 ```
 
-### 4. Feche o Workbook
+### 🚫 4. Feche o Workbook
 
-Quando terminar de ler o arquivo, é importante fechar o Workbook para liberar recursos.
+Quando terminar de ler o arquivo, é importante fechar o Workbook para liberar recursos ou usar o
+try-with-resources
 
 ```java
 workbook.close();

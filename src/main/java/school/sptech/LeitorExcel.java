@@ -1,13 +1,11 @@
 package school.sptech;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -15,62 +13,56 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class LeitorExcel {
 
-    public List<Livro> extrarLivros(String nomeArquivo, InputStream arquivo) {
-        try {
-            System.out.println("\nIniciando leitura do arquivo %s\n".formatted(nomeArquivo));
+    public List<Livro> extrairLivros(String nomeArquivo) {
+        List<Livro> livrosExtraidos = new ArrayList<>();
 
-            // Criando um objeto Workbook a partir do arquivo recebido
-            Workbook workbook;
-            if (nomeArquivo.endsWith(".xlsx")) {
-                workbook = new XSSFWorkbook(arquivo);
-            } else {
-                workbook = new HSSFWorkbook(arquivo);
-            }
+        try (
+              InputStream arquivo = new FileInputStream(nomeArquivo);
+              Workbook workbook = new XSSFWorkbook(arquivo) // caso seja .xls troque para HSSFWorkbook
+        ) {
+
+            System.out.printf("Iniciando leitura do arquivo %s%n", nomeArquivo);
 
             Sheet sheet = workbook.getSheetAt(0);
-
-            List<Livro> livrosExtraidos = new ArrayList<>();
-
-            // Iterando sobre as linhas da planilha
             for (Row row : sheet) {
-
                 if (row.getRowNum() == 0) {
-                    System.out.println("\nLendo cabeçalho");
-
-                    for (int i = 0; i < 4; i++) {
-                        String coluna = row.getCell(i).getStringCellValue();
-                        System.out.println("Coluna " + i + ": " + coluna);
-                    }
-
-                    System.out.println("--------------------");
+                    printarCabecalho(row);
                     continue;
                 }
 
                 // Extraindo valor das células e criando objeto Livro
                 System.out.println("Lendo linha " + row.getRowNum());
 
-                Livro livro = new Livro();
-                livro.setId((int) row.getCell(0).getNumericCellValue());
-                livro.setTitulo(row.getCell(1).getStringCellValue());
-                livro.setAutor(row.getCell(2).getStringCellValue());
-                livro.setDataLancamento(converterDate(row.getCell(3).getDateCellValue()));
+                Integer id = (int) row.getCell(0).getNumericCellValue();
+                String titulo = row.getCell(1).getStringCellValue();
+                String autor = row.getCell(2).getStringCellValue();
+                LocalDate dataLancamento = row.getCell(3).getLocalDateTimeCellValue().toLocalDate();
 
+                Livro livro = new Livro(id, titulo, autor, dataLancamento);
                 livrosExtraidos.add(livro);
             }
 
-            // Fechando o workbook após a leitura
-            workbook.close();
-
-            System.out.println("\nLeitura do arquivo finalizada\n");
+            printarLinhas();
+            System.out.println("Leitura do arquivo finalizada");
+            printarLinhas();
 
             return livrosExtraidos;
         } catch (IOException e) {
-            // Caso ocorra algum erro durante a leitura do arquivo uma exceção será lançada
-            throw new RuntimeException(e);
+            return livrosExtraidos;
         }
     }
 
-    private LocalDate converterDate(Date data) {
-        return data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    private void printarCabecalho(Row row) {
+        printarLinhas();
+        System.out.println("Lendo cabeçalho");
+        for (int i = 0; i < 4; i++) {
+            String coluna = row.getCell(i).getStringCellValue();
+            System.out.println("Coluna " + i + ": " + coluna);
+        }
+        printarLinhas();
+    }
+
+    private void printarLinhas() {
+        System.out.println("-".repeat(20));
     }
 }
